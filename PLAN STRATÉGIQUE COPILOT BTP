@@ -1,0 +1,375 @@
+# 🎯 PLAN STRATÉGIQUE COPILOT BTP
+## Senior Dev / Project Manager Mindset
+
+---
+
+## 📊 1. SITUATION & OBJECTIFS
+
+### État Actuel (04/04/2026)
+```
+✅ Spec : 100% détaillée (README + ARCHITECTURE + ROADMAP)
+✅ Stack : Décidée & testée sur Odoc
+❌ Code : 0 lignes
+❌ BD : 0 tables
+Urgence : Beta artisans fin avril (3-4 semaines)
+Équipe : 1 dev + Claude Code
+Budget : Infra only (~100€/mois)
+```
+
+### Objectif Primaire
+**MVP beta fonctionnel en 10 jours.**
+- Pas d'UI beautifulé, pas de features secondaires
+- Robustesse > Esthétique
+- 6 modules CRITIQUES uniquement
+
+### Objectif Secondaire
+**Aller en prod + trouver 5-10 beta testeurs artisans semaine 2**
+
+---
+
+## 🎲 2. RISQUES & MITIGATION
+
+| Risque | Probabilité | Impact | Mitigation |
+|--------|---|---|---|
+| **Gemini API timeout** | Moyenne | CRITIQUE | Fallback Groq + timeout 30s max |
+| **Supabase RLS casé** | Basse | CRITIQUE | Tester RLS J2 matin |
+| **Scope creep** | Haute | HAUTE | Kill features J5+ si retard |
+| **Auth complexity** | Basse | Moyenne | Copier Odoc pattern |
+| **Mobile responsive** | Moyenne | Moyenne | Test daily sur device réel |
+| **Stripe integration** | Basse | Basse | Defer to J10, mock payment avant |
+
+**Stratégie** : Test chaque dépendance J1. Break early = fix early.
+
+---
+
+## 🏗️ 3. ARCHITECTURE DÉCISIONS
+
+### Pourquoi cette approche ?
+
+**Option 1 : Monorepo (Nx/Turbo)** → 2 jours setup, trop pour 10j ❌
+**Option 2 : Monolith React + Supabase Edge** → Choisi ✅
+
+### Pattern: Odoc Clone
+
+1. **Frontend** : React hooks + React Query (caching smart)
+2. **Backend** : Supabase Edge Functions (Deno) + RLS
+3. **IA** : Gemini Flash (cheap, fast) + Groq fallback
+4. **Auth** : Supabase email (simplest, Odoc-proven)
+5. **Deploy** : Lovable Cloud (auto-CI/CD, faster iterate)
+
+### Pas de Nice-To-Haves
+❌ Dark mode toggle (default dark, done)
+❌ Notifications real-time (polling J8+ si temps)
+❌ Analytics dashboards fancy (simple graphs OK)
+❌ Mobile app (PWA suffix j10)
+❌ Internationalization (FR only, EN in code comments)
+❌ E-commerce payment flow (stub form J10)
+
+---
+
+## 📅 4. SPRINT STRUCTURE
+
+### Jour 1 : FOUNDATION (8h)
+**Goal** : Deploye app vide fonctionnelle
+**Risks** : Auth, Supabase config
+**Acceptance** : Preview URL live + routes OK + TypeScript clean
+
+### Jours 2-3 : DATA LAYER (12h)
+**Goal** : BD + CRUD hooks connectés
+**Killer** : Si Supabase RLS cassée, tout fail
+**Acceptance** : useChantiers retourne vraies données
+
+### Jours 4-6 : CORE FEATURES (20h)
+**Goal** : 3 modules critiques (Documents + Factures + Suivi)
+**Killer** : Gemini integration + document upload
+**Acceptance** : Upload PDF → données extraites → stockées
+
+### Jours 7-9 : POLISH + SECONDARY (18h)
+**Goal** : Brain IA + Analytics + Team + Settings
+**Killer** : Time crunch, scope de Brain = huge
+**Acceptance** : Brain chat fonctionne (simple Q&A)
+
+### Jour 10 : DEPLOY + BETA (6h)
+**Goal** : Prod-ready + 5 beta users onboardés
+**Killer** : Stripe webhook / Email flow
+**Acceptance** : 5 artisans inside, peuvent créer chantier
+
+---
+
+## 💪 5. STRATÉGIE PAR JOUR
+
+### JOUR 1 : Setup + Auth + Navigation
+```typescript
+Commits:
+- init(vite): React+TS+Vite scaffold
+- feat(auth): Supabase email login + protected routes
+- feat(layout): Sidebar + 10 routes stubs
+- feat(design): Tailwind colors indigo/amber BTP
+- deploy(lovable): Preview URL live
+```
+**Livrables** : app.copilot-btp.lovable.app fonctionnel
+
+### JOUR 2 : Database + Hooks
+```typescript
+Commits:
+- db(schema): 11 tables migrated Supabase
+- feat(hooks): useAuth, useChantiers, useDocuments
+- feat(dashboard): 6 KPIs mock data
+- test(rls): Verify RLS policies work
+```
+**Livrables** : useChantiers({ chantiers, create, update, delete })
+
+### JOUR 3 : Chantiers CRUD + UI
+```typescript
+Commits:
+- feat(chantiers): List + Filter + Create/Edit
+- feat(ui): ChantierCard + ChantierDrawer
+- feat(badge): StatusBadge avec couleurs
+- test(mobile): Responsive OK
+```
+**Livrables** : Créer chantier live dans DB
+
+### JOUR 4 : Documents + Upload
+```typescript
+Commits:
+- feat(upload): PDF/image upload to Storage
+- feat(edge-function): analyze-btp-document
+- feat(extraction): Gemini extraction → ExtractedDataBTP
+- feat(documents-ui): List + Status
+```
+**Livrables** : Upload PDF → données extraites affichées
+
+### JOUR 5 : Factures BTP
+```typescript
+Commits:
+- feat(factures): Extract facture with autoliquidation TVA
+- feat(edge-function): extract-facture-btp
+- feat(approvals): Approval workflow
+- feat(alerts): J-7/J-3 impayés
+```
+**Livrables** : Factures détectées, TVA auto-liquidée
+
+### JOUR 6 : Suivi Chantier (Réserves + PV)
+```typescript
+Commits:
+- feat(reserves): CRUD réserves chantier
+- feat(pv-reception): PV template + PDF export
+- feat(avancement): % progress par lot
+- test(mobile-terrain): Field usage simulation
+```
+**Livrables** : Réserves gérables, PV printable
+
+### JOUR 7 : Brain BTP (IA Copilot)
+```typescript
+Commits:
+- feat(brain-chat): Chat interface full-screen
+- feat(edge-function): brain-btp-query
+- feat(context): Document context inject
+- feat(suggestions): Quick suggestions CCTP/Risques/Devis
+```
+**Livrables** : Chat IA fonctionne, cite docs
+
+### JOUR 8 : Analytics + Team + Settings
+```typescript
+Commits:
+- feat(analytics): 3 vues KPIs (Chantier/Comptable/Opé)
+- feat(team): Team members + roles
+- feat(settings): 5 tabs settings
+- feat(onboarding): Wizard 4 steps
+```
+**Livrables** : Dashboard analytics + Onboarding flow
+
+### JOUR 9 : Notifications + Stripe mock
+```typescript
+Commits:
+- feat(notifications): System + notification center
+- feat(stripe): Payment form mock (no webhook J10)
+- feat(pricing): 3 plans display
+- feat(pwa): PWA manifest + mobile shortcut
+```
+**Livrables** : Pricing visible, Stripe form ready
+
+### JOUR 10 : Deploy + Beta
+```typescript
+Commits:
+- deploy(prod): copilot-btp.fr live
+- test(smoke): Critical user flows OK
+- setup(stripe-webhook): Webhook local + log
+- onboard(beta-users): 5 artisans inside
+```
+**Livrables** : 5 beta users = success metric
+
+---
+
+## 🎯 6. KILL FEATURES (Scope Control)
+
+### MUST HAVE (J1-10)
+- ✅ Auth login/signup
+- ✅ Chantiers CRUD
+- ✅ Documents upload + extraction IA
+- ✅ Factures IA + autoliquidation TVA
+- ✅ Réserves chantier
+- ✅ Brain BTP (chat IA simple)
+- ✅ Dashboard KPIs (6 basics)
+- ✅ Team + Settings (copy Odoc)
+- ✅ Deploy prod + Stripe mock
+
+### NICE TO HAVE (POST-BETA)
+- ❌ Dark mode toggle (default dark OK)
+- ❌ Real-time collab
+- ❌ Mobile app native
+- ❌ Advanced analytics
+- ❌ Integrations (Google Drive, Zapier)
+- ❌ Signature electronique
+- ❌ PPF e-facture (Sept 2026)
+
+### DEFER TO MONTH 2+
+- 🔄 Open banking
+- 🔄 Module sous-traitants
+- 🔄 Export PPSPS auto
+- 🔄 Versions BE/ES
+- 🔄 SMS alerts
+
+---
+
+## 🧠 7. DECISION RULES
+
+**Quand couper une feature** :
+- Si elle prend > 6h de dev
+- Si elle bloque 2+ autres features
+- Si elle demande un appel API externe sans fallback
+
+**Exemple** : "Notifications real-time" → **demande WebSocket + polling fallback** → Trop. **Solution** : Cron job notify J8+.
+
+**Quand skip une implémentation** :
+- Stripe webhook ? Mock response jusqu'à J10 prod
+- Google Drive sync ? Documenté pour month 2
+- Email campaigns ? Resend template prêt, trigger manuel
+
+---
+
+## 📊 8. METRICS DE SUCCÈS
+
+### Jour 1 ✅
+- [ ] Lovable preview live
+- [ ] Auth works (login → redirect)
+- [ ] 10 routes navigable
+- [ ] Sidebar + layout responsive
+
+### Jour 3 ✅
+- [ ] 50+ chantiers créés (load test)
+- [ ] Filtres fonctionnent
+- [ ] CRUD complete
+
+### Jour 6 ✅
+- [ ] 10 PDFs uploadés
+- [ ] Extraction IA moyenne 80%+ accuracy
+- [ ] Factures détectées
+
+### Jour 10 ✅
+- [ ] 5 beta users onboardés
+- [ ] 3/5 ont créé ≥1 chantier
+- [ ] 0 critical bugs (p1)
+- [ ] Response time < 3s (API)
+- [ ] Mobile: scrolls smooth, forms work
+
+---
+
+## 🔒 9. QUALITY GATES
+
+### Code
+- [ ] TypeScript strict mode = 0 errors
+- [ ] No `any` type
+- [ ] All async functions have error handling
+- [ ] RLS policies tested before merge
+
+### UX
+- [ ] Mobile: 375px width OK
+- [ ] Forms: all fields labeled
+- [ ] Buttons: all have :hover + :disabled states
+- [ ] Loading: spinners visible
+
+### Data
+- [ ] Supabase: 100% RLS coverage
+- [ ] Exports: FEC format correct
+- [ ] Dates: ISO 8601 in DB, local display
+
+### Perf
+- [ ] Lighthouse mobile: > 80
+- [ ] API response: < 2s (excl. IA)
+- [ ] Bundle: < 500KB gzip
+
+---
+
+## 📞 10. COMMUNICATION PLAN
+
+### Daily Status
+```
+✅ Commits pushed
+📊 Progress: Day N / 10 (60%)
+🐛 Blockers: None
+⚠️ Concerns: [list]
+🎯 Next: [tomorrow goal]
+```
+
+### Risks
+- **Red flag** : Feature blocked > 2h → escalate
+- **Stopper** : TypeScript error → fix immediately
+- **Optional** : Design polish → defer
+
+### Weekly
+- Lovable preview stable
+- No critical bugs (p1)
+- Beta onboarding ready
+
+---
+
+## 🚀 11. LAUNCH STRATEGY
+
+### Week 1 (J1-10)
+- MVP beta : 5 artisans testeurs
+- Feedback daily
+- Bug fix priority
+
+### Week 2 (After Day 10)
+- 50 artisans alpha
+- Feature requests collected
+- Month 2 roadmap updated
+
+### Week 3-4 (Pre-May Launch)
+- Public beta : 500+ waitlist
+- Pricing optimized
+- Marketing site SEO
+
+---
+
+## 📋 SUMMARY TABLE
+
+| Phase | Days | Focus | Risk Level |
+|-------|------|-------|-----------|
+| Foundation | 1 | Setup + Auth | 🔴 High |
+| Data Layer | 2-3 | Hooks + DB | 🔴 High |
+| Core | 4-6 | Docs/Factures/Suivi | 🟠 Medium |
+| Secondary | 7-9 | Brain/Analytics/UI | 🟢 Low |
+| Launch | 10 | Deploy + Beta | 🔴 High |
+
+---
+
+## ⚡ LAST TIPS FOR SUCCESS
+
+1. **Commit early, commit often** (every 1-2h)
+2. **Test on real device daily** (not just browser)
+3. **Logs, logs, logs** (error tracking = lifesaver)
+4. **Supabase console always open** (debug RLS, queries)
+5. **Keep Lovable deploy green** (revert if broken)
+6. **No heroics after 10pm** (tired code = bugs)
+7. **Copy Odoc patterns** (don't reinvent wheel)
+8. **Ask Claude "what could fail?"** before big features
+9. **Beta testers ≠ Users** (test ≠ feedback)
+10. **Ship fast, iterate faster** (MVP first, polish month 2)
+
+---
+
+**Status** : 🟢 Ready to launch
+**Last Updated** : 04/04/2026 — 14:00 CET
+**Next Action** : Validate checklist → Launch Day 1
