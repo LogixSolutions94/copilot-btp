@@ -1,0 +1,193 @@
+# ✅ CHECKLIST PRÉ-LANCEMENT COPILOT BTP
+
+## 🔑 1. Secrets & API Keys (À préparer avant Jour 1)
+
+### Supabase
+- [ ] Créer 2 projets Supabase
+  - [ ] `copilot-btp-dev` (développement)
+  - [ ] `copilot-btp-prod` (prod futur)
+- [ ] Copier `VITE_SUPABASE_URL` (dev)
+- [ ] Copier `VITE_SUPABASE_ANON_KEY` (dev)
+- [ ] Copier `SUPABASE_SERVICE_ROLE_KEY` (env var secrète)
+- [ ] Exécuter la migration SQL (copilot-btp-schema.sql) dans Supabase SQL Editor
+
+### Google Gemini
+- [ ] Créer Google Cloud project
+- [ ] Activer Gemini API (1.5 Flash + 2.5 Flash)
+- [ ] Créer API Key (dev mode OK)
+- [ ] Copier `GEMINI_API_KEY`
+
+### Resend (Emails)
+- [ ] Créer compte Resend (gratuit)
+- [ ] Copier `RESEND_API_KEY`
+- [ ] Ajouter domaine verified (optionnel J1)
+
+### Stripe (Facturation)
+- [ ] Créer compte Stripe
+- [ ] Activer "Test Mode"
+- [ ] Copier `STRIPE_SECRET_KEY` (test)
+- [ ] Copier `STRIPE_PUBLISHABLE_KEY` (test)
+- [ ] Créer webhook local (Stripe CLI) — fait en J10
+
+### GitHub
+- [ ] Créer repo `copilot-btp` (public)
+- [ ] Ajouter `.env.local` à `.gitignore`
+- [ ] Branch protection (main = PR review)
+
+### Lovable Cloud
+- [ ] Compte Lovable connecté
+- [ ] Repo GitHub authorisé
+- [ ] Auto-deploy activé
+
+---
+
+## 🗄️ 2. Base de Données
+
+### Supabase Dev
+- [ ] Exécuter migration SQL `copilot-btp-schema.sql`
+- [ ] Vérifier 11 tables créées
+  - profiles
+  - team_members
+  - chantiers
+  - documents_btp
+  - factures_btp
+  - reserves_chantier
+  - notifications
+  - brain_sessions
+  - brain_messages
+  - connectors
+  - (+ 1 view vw_dashboard_kpis)
+- [ ] RLS activé sur toutes les tables
+- [ ] Indexes créés (vérifié)
+- [ ] Auth provider email configuré (par défaut Supabase)
+
+### Storage Buckets
+- [ ] Créer bucket `documents-btp` (private + RLS)
+- [ ] Créer bucket `avatars` (private + RLS)
+- [ ] Créer bucket `exports` (private + RLS)
+
+---
+
+## 📁 3. Répertoire Local
+
+### Initialisation
+- [ ] Créer dossier `~/projects/copilot-btp/`
+- [ ] `git init`
+- [ ] `.gitignore` : `.env.local`, `node_modules/`, `dist/`, `.DS_Store`
+
+### Env Files
+- [ ] Créer `.env.example` (public, sans secrets)
+```env
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJxxx...
+GEMINI_API_KEY=AI-xxx...
+RESEND_API_KEY=re_xxxx...
+STRIPE_SECRET_KEY=sk_test_xxxx...
+```
+
+- [ ] Créer `.env.local` (git-ignored, avec vraies valeurs)
+
+### Git Workflow
+- [ ] `main` branch = stable
+- [ ] `dev` branch = work in progress
+- [ ] Daily commits : `git commit -m "feat(day1): auth + sidebar"`
+
+---
+
+## 🎨 4. Design & Branding
+
+### Assets
+- [ ] Logo Copilot BTP (PNG 512x512) → `public/logo.svg`
+- [ ] Favicon (ICO 32x32) → `public/favicon.ico`
+- [ ] Couleur primaire: `#4f46e5` (indigo)
+- [ ] Couleur accent: `#f59e0b` (ambre BTP)
+
+### Tailwind Config
+- [ ] `tailwind.config.ts` avec couleurs BTP
+- [ ] Dark mode configuré (default)
+- [ ] Spacing cohérent (base 4px)
+
+---
+
+## 📚 5. Stack Outils
+
+### Dev
+- [ ] Node.js v18+ ✅ (ou v20)
+- [ ] npm ou pnpm (`pnpm` recommandé, plus rapide)
+- [ ] VS Code + extensions
+  - [ ] Tailwind CSS IntelliSense
+  - [ ] TypeScript Vue Plugin
+  - [ ] Prettier
+  - [ ] ESLint
+
+### IA & Claude
+- [ ] Claude Code prêt (Claude.ai ou Continue.dev)
+- [ ] Accès aux docs projet (ARCHITECTURE.md, ROADMAP.md, README.md)
+- [ ] Token budget Claude estimé : 70-90h = ~500k tokens max
+
+### Monitoring
+- [ ] Lovable deployment logs accessibles
+- [ ] Supabase admin panel open
+- [ ] Stripe test dashboard accessible
+
+---
+
+## 🚀 6. Jour 1 Readiness
+
+### Documents
+- [ ] README.md ✅
+- [ ] ARCHITECTURE.md ✅
+- [ ] ROADMAP.md ✅
+- [ ] Checklist (ce fichier) ✅
+
+### Accès Nécessaires
+- [ ] Console Supabase (dev) accessible
+- [ ] Google Cloud console accessible
+- [ ] Stripe dashboard accessible
+- [ ] GitHub (push/pull OK)
+- [ ] Lovable deploy en place
+
+### Estimés Jour 1
+- [ ] Temps setupVite+dépendances: 30 min
+- [ ] Auth Supabase: 1h
+- [ ] Routing + Layout: 1h
+- [ ] Design system: 1h
+- [ ] Hooks stubs: 1h
+- [ ] Dashboard mock: 1h
+- [ ] Deploy Lovable: 30 min
+- **Total: 6-7h réalistes**
+
+---
+
+## ⚡ 7. Commande Fast Lane
+
+Si tout est prêt, dire à Claude Code :
+
+```
+J'ai préparé les 3 fichiers de spec (README, ARCHITECTURE, ROADMAP).
+Stack: React+TS+Vite+Tailwind+Shadcn+Supabase.
+Secrets: Supabase keys + Gemini + Stripe + Resend prêts.
+DB: Schema SQL exécutée (11 tables + RLS).
+
+Lance Jour 1 : Setup + Auth + Sidebar + Dashboard mock.
+Lovable deploy inclus.
+
+Prompt pour Claude Code dans ROADMAP.md / JOUR 1.
+Go !
+```
+
+---
+
+## 📝 Notes d'Exécution
+
+- Chaque jour = 1 fichier commit en fin de j
+- Lovable auto-redeploy on push
+- Tests manuels : naviguer chaque route
+- Logs Console : pas d'erreurs TS
+- Mobile: tester sur iPhone/Android (DevTools)
+
+---
+
+**Status** : ⏳ En attente de validation checklist avant Jour 1
+**Date**: 04/04/2026
+**Prochaine étape**: Valide la checklist → Lance Jour 1 ✅
